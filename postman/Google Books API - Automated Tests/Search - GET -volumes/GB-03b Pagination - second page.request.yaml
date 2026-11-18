@@ -1,0 +1,23 @@
+$kind: http-request
+description: Page 2 (startIndex=5, 5 items). No item of page 2 should appear on page 1.
+url: "{{baseUrl}}/volumes?q=testing&maxResults=5&startIndex=5&key={{apiKey}}"
+method: GET
+headers:
+  Accept: application/json
+queryParams:
+  q: testing
+  maxResults: "5"
+  startIndex: "5"
+  key: "{{apiKey}}"
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status is 200', () => pm.response.to.have.status(200));
+      const body = pm.response.json();
+      pm.test('Page has items', () => pm.expect(body.items).to.be.an('array').that.is.not.empty);
+      pm.test('Page 2 does not repeat items from page 1', () => {
+        const page1 = JSON.parse(pm.collectionVariables.get('page1Ids'));
+        body.items.forEach(item => pm.expect(page1).to.not.include(item.id));
+      });
+    language: text/javascript
+order: 4000

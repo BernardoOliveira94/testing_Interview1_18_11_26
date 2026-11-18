@@ -1,0 +1,3 @@
+$kind: collection
+name: Volume - GET /volumes/{id}
+order: 2000

@@ -1,0 +1,10 @@
+# Use this workspace to collaborate
+workspace:
+  id: 88a1e40f-48b3-423a-85f6-b252b52a4e5e
+
+localResources:
+  collections:
+    - ../google-books.postman_collection.json
+    - ../Google Books API - Automated Tests
+  environments:
+    - ../Google Books - Env.environment.yaml

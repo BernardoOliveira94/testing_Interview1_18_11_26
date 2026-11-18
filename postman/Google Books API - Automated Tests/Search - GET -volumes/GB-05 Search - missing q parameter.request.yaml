@@ -1,0 +1,21 @@
+$kind: http-request
+description: "q is required. Expected: 400 with the standard error object."
+url: "{{baseUrl}}/volumes?key={{apiKey}}"
+method: GET
+headers:
+  Accept: application/json
+queryParams:
+  key: "{{apiKey}}"
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status is 400', () => pm.response.to.have.status(400));
+      const body = pm.response.json();
+      pm.test('Error object has code and message', () => {
+        pm.expect(body).to.have.property('error');
+        pm.expect(body.error).to.have.property('code');
+        pm.expect(body.error).to.have.property('message');
+        pm.expect(body.error.code).to.eql(pm.response.code);
+      });
+    language: text/javascript
+order: 6000

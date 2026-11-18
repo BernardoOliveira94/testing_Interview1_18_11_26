@@ -1,0 +1,23 @@
+$kind: http-request
+description: The documentation says maxResults is at most 40. The API either rejects 50 (400) or caps the result at 40. Verify the real behaviour on the first run, then keep only the accepted branch.
+url: "{{baseUrl}}/volumes?q=ios&maxResults=50&key={{apiKey}}"
+method: GET
+headers:
+  Accept: application/json
+queryParams:
+  q: ios
+  maxResults: "50"
+  key: "{{apiKey}}"
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Rejected (400) or capped (<= 40 items)', () => {
+        if (pm.response.code === 400) {
+          pm.expect(pm.response.json()).to.have.property('error');
+        } else {
+          pm.expect(pm.response.code).to.eql(200);
+          pm.expect(pm.response.json().items.length).to.be.at.most(40);
+        }
+      });
+    language: text/javascript
+order: 7000

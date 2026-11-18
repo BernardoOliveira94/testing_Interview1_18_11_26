@@ -1,0 +1,6 @@
+name: Google Books - Env
+values:
+  - key: baseUrl
+    value: 'https://www.googleapis.com/books/v1'
+  - key: apiKey
+    value: 'AIzaSyCo4b_RVGDwPC1i3DQAk1UYlCmYUUT9ZCs'

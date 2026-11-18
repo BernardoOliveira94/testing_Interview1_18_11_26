@@ -1,0 +1,22 @@
+$kind: collection
+description: |-
+  Automated tests for the Google Books Volumes API (GET /volumes, GET /volumes/{id}).
+
+  Setup: import the environment, set apiKey (Google Cloud API key with the Books API enabled), run the collection in order (GB-01 saves the volume id used by GB-08).
+  Command line: newman run google-books.postman_collection.json -e google-books.postman_environment.json
+
+  Tests check structure and rules, not exact content, because the catalogue changes over time.
+variables:
+  volumeId: ""
+  page1Ids: "[]"
+scripts:
+  - type: http:afterResponse
+    code: |-
+      // Runs after every request in the collection
+      pm.test('Not rate limited (a 429 quota error is never a valid result)', () => {
+        pm.expect(pm.response.code, 'Quota exceeded: set apiKey in the environment').to.not.eql(429);
+      });
+      pm.test('Response time is below 2000 ms', () => {
+        pm.expect(pm.response.responseTime).to.be.below(2000);
+      });
+    language: text/javascript

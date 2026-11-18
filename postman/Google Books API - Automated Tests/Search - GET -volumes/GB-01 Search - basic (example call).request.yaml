@@ -1,0 +1,43 @@
+$kind: http-request
+description: Example call from the exercise. Checks status, JSON content type, response structure and the main fields of each item. Saves the first volume id for GB-08.
+url: "{{baseUrl}}/volumes?q=ios&maxResults=20&startIndex=0&key={{apiKey}}"
+method: GET
+headers:
+  Accept: application/json
+queryParams:
+  q: ios
+  maxResults: "20"
+  startIndex: "0"
+  key: "{{apiKey}}"
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status is 200', () => pm.response.to.have.status(200));
+      pm.test('Response is JSON', () => {
+        pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');
+      });
+      const body = pm.response.json();
+      pm.test('Top-level structure is correct', () => {
+        pm.expect(body.kind).to.eql('books#volumes');
+        pm.expect(body).to.have.property('totalItems');
+        pm.expect(body.totalItems).to.be.a('number').and.to.be.above(0);
+        pm.expect(body.items).to.be.an('array').that.is.not.empty;
+      });
+      pm.test('Respects maxResults (<= 20)', () => {
+        pm.expect(body.items.length).to.be.at.most(20);
+      });
+      pm.test('Every item has kind, id and volumeInfo.title', () => {
+        body.items.forEach(item => {
+          pm.expect(item.kind).to.eql('books#volume');
+          pm.expect(item).to.have.property('id');
+          pm.expect(item.volumeInfo).to.have.property('title');
+        });
+      });
+      pm.test('Item ids are unique', () => {
+        const ids = body.items.map(i => i.id);
+        pm.expect(new Set(ids).size).to.eql(ids.length);
+      });
+      // save for GB-08
+      pm.collectionVariables.set('volumeId', body.items[0].id);
+    language: text/javascript
+order: 1000

@@ -1,0 +1,15 @@
+$kind: http-request
+description: "An unknown id must not return 200. Google may answer 404 or a 5xx for malformed ids: verify on the first run and tighten the assertion."
+url: "{{baseUrl}}/volumes/doesnotexist123?key={{apiKey}}"
+method: GET
+headers:
+  Accept: application/json
+queryParams:
+  key: "{{apiKey}}"
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Not a success (4xx or 5xx)', () => pm.expect(pm.response.code).to.be.at.least(400));
+      pm.test('Error object is returned', () => pm.expect(pm.response.json()).to.have.property('error'));
+    language: text/javascript
+order: 2000

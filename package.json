@@ -1,0 +1,16 @@
+{
+  "name": "mbway-qa-exercises",
+  "version": "1.0.0",
+  "private": true,
+  "description": "SIBS / MB WAY QA technical exercise - Bernardo M. Oliveira",
+  "scripts": {
+    "test:api": "playwright test --project=google-books-api",
+    "test:api:mock": "node tests/support/run-with-mock.js",
+    "test:portal": "playwright test --project=portal",
+    "test": "playwright test",
+    "report": "playwright show-report"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.63.0"
+  }
+}

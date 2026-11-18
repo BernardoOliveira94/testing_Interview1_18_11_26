@@ -1,0 +1,20 @@
+$kind: http-request
+description: Uses the id saved by GB-01. Run GB-01 first.
+url: "{{baseUrl}}/volumes/{{volumeId}}?key={{apiKey}}"
+method: GET
+headers:
+  Accept: application/json
+queryParams:
+  key: "{{apiKey}}"
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status is 200', () => pm.response.to.have.status(200));
+      const body = pm.response.json();
+      pm.test('Returned volume is the requested one', () => {
+        pm.expect(body.kind).to.eql('books#volume');
+        pm.expect(body.id).to.eql(pm.collectionVariables.get('volumeId'));
+        pm.expect(body.volumeInfo).to.have.property('title');
+      });
+    language: text/javascript
+order: 1000

@@ -1,0 +1,20 @@
+$kind: http-request
+description: "A query that matches nothing: the API answers 200 with totalItems = 0 and no items. Verify this on the first run."
+url: "{{baseUrl}}/volumes?q=zzzqqqxxx987654321&key={{apiKey}}"
+method: GET
+headers:
+  Accept: application/json
+queryParams:
+  q: zzzqqqxxx987654321
+  key: "{{apiKey}}"
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status is 200', () => pm.response.to.have.status(200));
+      const body = pm.response.json();
+      pm.test('totalItems is 0', () => pm.expect(body.totalItems).to.eql(0));
+      pm.test('No items returned', () => {
+        pm.expect(body.items === undefined || body.items.length === 0).to.be.true;
+      });
+    language: text/javascript
+order: 5000

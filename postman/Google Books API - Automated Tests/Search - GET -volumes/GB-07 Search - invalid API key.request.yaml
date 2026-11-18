@@ -1,0 +1,22 @@
+$kind: http-request
+description: A wrong key must be rejected with a 4xx error object.
+url: "{{baseUrl}}/volumes?q=ios&key=invalid-key-for-testing"
+method: GET
+headers:
+  Accept: application/json
+queryParams:
+  q: ios
+  key: invalid-key-for-testing
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status is 4xx', () => pm.expect(pm.response.code).to.be.within(400, 403));
+      const body = pm.response.json();
+      pm.test('Error object has code and message', () => {
+        pm.expect(body).to.have.property('error');
+        pm.expect(body.error).to.have.property('code');
+        pm.expect(body.error).to.have.property('message');
+        pm.expect(body.error.code).to.eql(pm.response.code);
+      });
+    language: text/javascript
+order: 8000
