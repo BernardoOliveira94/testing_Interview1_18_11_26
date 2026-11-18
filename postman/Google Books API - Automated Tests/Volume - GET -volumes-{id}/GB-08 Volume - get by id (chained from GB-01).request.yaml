@@ -9,11 +9,12 @@ queryParams:
 scripts:
   - type: afterResponse
     code: |-
+      // ===== GB-08: get one book by id. The id comes from the collection variable {{volumeId}} saved by GB-01 =====
       pm.test('Status is 200', () => pm.response.to.have.status(200));
       const body = pm.response.json();
       pm.test('Returned volume is the requested one', () => {
-        pm.expect(body.kind).to.eql('books#volume');
-        pm.expect(body.id).to.eql(pm.collectionVariables.get('volumeId'));
+        pm.expect(body.kind).to.eql('books#volume');                                        // a single book
+        pm.expect(body.id).to.eql(pm.collectionVariables.get('volumeId'));                  // same id we asked for
         pm.expect(body.volumeInfo).to.have.property('title');
       });
     language: text/javascript

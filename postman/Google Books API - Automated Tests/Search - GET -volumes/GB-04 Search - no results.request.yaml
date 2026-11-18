@@ -10,10 +10,12 @@ queryParams:
 scripts:
   - type: afterResponse
     code: |-
-      pm.test('Status is 200', () => pm.response.to.have.status(200));
+      // ===== GB-04: a search with no matches (nonsense word) =====
+      pm.test('Status is 200', () => pm.response.to.have.status(200));  // an empty result is valid, not an error
       const body = pm.response.json();
       pm.test('totalItems is 0', () => pm.expect(body.totalItems).to.eql(0));
       pm.test('No items returned', () => {
+        // Google omits `items` when there are no results, so accept "missing" (undefined) or "empty list".
         pm.expect(body.items === undefined || body.items.length === 0).to.be.true;
       });
     language: text/javascript

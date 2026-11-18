@@ -4,3 +4,7 @@ playwright-report/
 test-results/
 blob-report/
 *.log
+# Excel temporary lock files (created while the .xlsx is open)
+~$*
+# Postman environment file: Postman writes the API key you type into it, so it must never be committed
+postman/*.environment.yaml

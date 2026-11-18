@@ -9,6 +9,8 @@ queryParams:
 scripts:
   - type: afterResponse
     code: |-
+      // ===== GB-09: negative test - an id that does not exist =====
+      // Google may answer 404 or a 5xx for invalid ids, so we only require "not a success" (400 or above).
       pm.test('Not a success (4xx or 5xx)', () => pm.expect(pm.response.code).to.be.at.least(400));
       pm.test('Error object is returned', () => pm.expect(pm.response.json()).to.have.property('error'));
     language: text/javascript

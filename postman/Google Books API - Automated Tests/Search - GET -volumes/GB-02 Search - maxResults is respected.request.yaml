@@ -11,11 +11,12 @@ queryParams:
 scripts:
   - type: afterResponse
     code: |-
+      // ===== GB-02: maxResults=5 must return at most 5 books =====
       pm.test('Status is 200', () => pm.response.to.have.status(200));
       const body = pm.response.json();
       pm.test('At most 5 items returned', () => {
-        pm.expect(body.items).to.be.an('array');
-        pm.expect(body.items.length).to.be.at.most(5);
+        pm.expect(body.items).to.be.an('array');            // there is a list...
+        pm.expect(body.items.length).to.be.at.most(5);      // ...with 5 books or fewer
       });
     language: text/javascript
 order: 2000

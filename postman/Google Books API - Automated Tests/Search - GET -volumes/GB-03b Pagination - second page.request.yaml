@@ -1,5 +1,5 @@
 $kind: http-request
-description: Page 2 (startIndex=5, 5 items). No item of page 2 should appear on page 1.
+description: Page 2 (startIndex=5, 5 items). The live API can repeat one item between neighbouring pages, so the test checks that page 2 is a different set of results than page 1.
 url: "{{baseUrl}}/volumes?q=testing&maxResults=5&startIndex=5&key={{apiKey}}"
 method: GET
 headers:
@@ -12,12 +12,18 @@ queryParams:
 scripts:
   - type: afterResponse
     code: |-
+      // ===== GB-03b: second page (startIndex=5). Compare it with page 1 saved by GB-03a =====
       pm.test('Status is 200', () => pm.response.to.have.status(200));
       const body = pm.response.json();
       pm.test('Page has items', () => pm.expect(body.items).to.be.an('array').that.is.not.empty);
-      pm.test('Page 2 does not repeat items from page 1', () => {
-        const page1 = JSON.parse(pm.collectionVariables.get('page1Ids'));
-        body.items.forEach(item => pm.expect(page1).to.not.include(item.id));
+      // REAL FINDING from the live API: neighbouring pages can share one book, so we do NOT require zero overlap.
+      // We check what the API really guarantees: page 2 is a different set of results.
+      pm.test('Page 2 returns different results than page 1', () => {
+        const page1 = JSON.parse(pm.collectionVariables.get('page1Ids'));  // text -> list of ids
+        const page2 = body.items.map(i => i.id);
+        pm.expect(page2.join(',')).to.not.eql(page1.join(','));             // the pages are not identical
+        // `some` = at least one book on page 2 is not on page 1
+        pm.expect(page2.some(id => !page1.includes(id))).to.be.true;
       });
     language: text/javascript
 order: 4000

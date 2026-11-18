@@ -46,7 +46,7 @@ Command line: `npx newman run postman/google-books.postman_collection.json -e po
 |---|---|
 | GB-01 | Example call: 200, JSON, `kind`, `totalItems`, items <= 20, `id` and `volumeInfo.title`, unique ids, response time < 2 s |
 | GB-02 | `maxResults` respected (1, 5, 40) |
-| GB-03 | Pagination: page 2 does not repeat page 1 |
+| GB-03 | Pagination: page 2 returns different results than page 1 (the live API may repeat one item between pages) |
 | GB-04 | No matches: `totalItems = 0`, no items |
 | GB-05 | Missing `q`: 400 + error object |
 | GB-06 | `maxResults=50`: rejected (400) or capped at 40 |

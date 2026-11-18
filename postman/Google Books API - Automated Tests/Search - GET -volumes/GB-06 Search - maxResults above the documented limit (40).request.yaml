@@ -11,10 +11,14 @@ queryParams:
 scripts:
   - type: afterResponse
     code: |-
+      // ===== GB-06: boundary test - maxResults=50 is above the documented limit of 40 =====
+      // The documentation does not say what happens, so we accept the two reasonable behaviours.
       pm.test('Rejected (400) or capped (<= 40 items)', () => {
         if (pm.response.code === 400) {
+          // Behaviour A: rejected with a clear error object
           pm.expect(pm.response.json()).to.have.property('error');
         } else {
+          // Behaviour B: accepted (200) but limited to 40 books
           pm.expect(pm.response.code).to.eql(200);
           pm.expect(pm.response.json().items.length).to.be.at.most(40);
         }

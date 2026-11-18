@@ -12,10 +12,17 @@ variables:
 scripts:
   - type: http:afterResponse
     code: |-
-      // Runs after every request in the collection
+      // ===== COLLECTION-LEVEL TESTS: Postman runs this script after EVERY request in the collection =====
+      // pm = the Postman object. pm.test('name', fn) = one check shown in the "Test Results" tab (green PASS / red FAIL).
+      // pm.expect(...) = assertion library (Chai): pm.expect(actual).to.eql(expected).
+
+      // Safety net: a 429 means "daily quota exceeded". It must never be treated as a valid answer,
+      // otherwise a negative test (expecting a 4xx error) could pass for the wrong reason.
       pm.test('Not rate limited (a 429 quota error is never a valid result)', () => {
+        // The text 'Quota exceeded...' is the message shown if this check fails.
         pm.expect(pm.response.code, 'Quota exceeded: set apiKey in the environment').to.not.eql(429);
       });
+      // Performance check: every response should arrive in under 2 seconds.
       pm.test('Response time is below 2000 ms', () => {
         pm.expect(pm.response.responseTime).to.be.below(2000);
       });

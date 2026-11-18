@@ -10,13 +10,18 @@ queryParams:
 scripts:
   - type: afterResponse
     code: |-
+      // ===== GB-07: security test - a wrong API key must be rejected =====
+      // This request uses key=invalid-key-for-testing on purpose (instead of {{apiKey}}).
+      // Between 400 and 403: 429 (quota) is excluded on purpose so a quota error can not pass as "rejected key".
       pm.test('Status is 4xx', () => pm.expect(pm.response.code).to.be.within(400, 403));
+      // Parse the answer body (text -> JavaScript object) so we can inspect it.
       const body = pm.response.json();
+      // Every Google error has this shape: { "error": { "code": 400, "message": "..." } }
       pm.test('Error object has code and message', () => {
-        pm.expect(body).to.have.property('error');
-        pm.expect(body.error).to.have.property('code');
-        pm.expect(body.error).to.have.property('message');
-        pm.expect(body.error.code).to.eql(pm.response.code);
+        pm.expect(body).to.have.property('error');            // there is an "error" object
+        pm.expect(body.error).to.have.property('code');       // with a code...
+        pm.expect(body.error).to.have.property('message');    // ...and a message
+        pm.expect(body.error.code).to.eql(pm.response.code);  // the code inside the body equals the HTTP status
       });
     language: text/javascript
 order: 8000

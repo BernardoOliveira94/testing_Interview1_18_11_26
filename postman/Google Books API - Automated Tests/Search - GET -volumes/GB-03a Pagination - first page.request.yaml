@@ -1,5 +1,5 @@
 $kind: http-request
-description: Page 1 (startIndex=0, 5 items). Saves the first id of the page for GB-03b.
+description: Page 1 (startIndex=0, 5 items). Saves the ids of the page for GB-03b.
 url: "{{baseUrl}}/volumes?q=testing&maxResults=5&startIndex=0&key={{apiKey}}"
 method: GET
 headers:
@@ -12,9 +12,12 @@ queryParams:
 scripts:
   - type: afterResponse
     code: |-
+      // ===== GB-03a: first page of the pagination test (startIndex=0, 5 books) =====
       pm.test('Status is 200', () => pm.response.to.have.status(200));
       const body = pm.response.json();
       pm.test('Page has items', () => pm.expect(body.items).to.be.an('array').that.is.not.empty);
+      // Remember the ids of page 1 for GB-03b. Collection variables can only hold text, so the list is turned
+      // into text with JSON.stringify (and turned back into a list with JSON.parse in GB-03b).
       pm.collectionVariables.set('page1Ids', JSON.stringify(body.items.map(i => i.id)));
     language: text/javascript
 order: 3000
